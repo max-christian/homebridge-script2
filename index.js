@@ -52,6 +52,7 @@ script2Accessory.prototype.setState = function(powerOn, callback) {
 
     exec(command, puts);
     accessory.log('Set ' + accessory.name + ' to ' + state);
+    accessory.currentState = powerOn;
     callback(null);
 }
 
@@ -95,13 +96,17 @@ script2Accessory.prototype.getServices = function() {
   
   if (this.fileState) {
     var fileCreatedHandler = function(path, stats){
-      this.log('File ' + path + ' was created');
-      switchService.setCharacteristic(Characteristic.On, true);
+      if (!this.currentState) {
+          this.log('File ' + path + ' was created');
+	      switchService.setCharacteristic(Characteristic.On, true);
+      }
     }.bind(this);
   
     var fileRemovedHandler = function(path, stats){
-      this.log('File ' + path + ' was deleted');
-      switchService.setCharacteristic(Characteristic.On, false);
+      if (this.currentState) {
+          this.log('File ' + path + ' was deleted');
+	      switchService.setCharacteristic(Characteristic.On, false);
+	  }
     }.bind(this);
   
     var watcher = chokidar.watch(this.fileState, {alwaysStat: true});
