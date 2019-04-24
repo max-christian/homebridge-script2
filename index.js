@@ -113,6 +113,5 @@ script2Accessory.prototype.getServices = function() {
     watcher.on('add', fileCreatedHandler);
     watcher.on('unlink', fileRemovedHandler);
   }
-
   return [switchService];
 }
